@@ -1,0 +1,77 @@
+{% extends 'reports/base.html' %}
+{% block title %}Dashboard | Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <h1 class="mb-0">Dashboard</h1>
+    <span class="badge text-bg-primary fs-6">{{ total_visits }} total visits</span>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="panel">
+            <h2>Visits per Month</h2>
+            <canvas id="monthChart" height="180"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="panel">
+            <h2>Visits by Status</h2>
+            <canvas id="statusChart" height="180"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="panel">
+            <h2>Visits by BU</h2>
+            <canvas id="buChart" height="180"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="panel">
+            <h2>Visits by Region</h2>
+            <canvas id="regionChart" height="180"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="panel">
+            <h2>Top 5 ARMs by Visit Count</h2>
+            <canvas id="armChart" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+    const palette = ['#0E7C86', '#F2994A', '#1F8A57', '#D8483F', '#5C6E72', '#B7DBDD'];
+
+    function makeBarChart(id, labels, data, horizontal) {
+        new Chart(document.getElementById(id), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{ label: 'Visits', data: data, backgroundColor: palette, borderRadius: 6 }]
+            },
+            options: {
+                indexAxis: horizontal ? 'y' : 'x',
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { x: { beginAtZero: true, ticks: { precision: 0 } }, y: { beginAtZero: true, ticks: { precision: 0 } } }
+            }
+        });
+    }
+
+    makeBarChart('monthChart', {{ month_labels|safe }}, {{ month_data|safe }}, false);
+    makeBarChart('buChart', {{ bu_labels|safe }}, {{ bu_data|safe }}, false);
+    makeBarChart('regionChart', {{ region_labels|safe }}, {{ region_data|safe }}, false);
+    makeBarChart('armChart', {{ arm_labels|safe }}, {{ arm_data|safe }}, true);
+
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ status_labels|safe }},
+            datasets: [{ data: {{ status_data|safe }}, backgroundColor: palette }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+</script>
+{% endblock %}

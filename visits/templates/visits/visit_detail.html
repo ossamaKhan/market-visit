@@ -1,0 +1,109 @@
+{% extends 'detail_base.html' %}
+{% block title %}{{ visit.name }} | Visit Detail{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ visit.name }}{% if visit.franchise %} — {{ visit.franchise.fr_id }}{% endif %}</h1>
+</div>
+
+<div class="panel detail-panel">
+    <h2>Franchise</h2>
+    <div class="detail-row"><span class="detail-label">Franchise (FR ID)</span><span>{{ visit.franchise.fr_id|default:"—" }}</span></div>
+    <div class="detail-row"><span class="detail-label">Region</span><span>{{ visit.franchise.region|default:"—" }}</span></div>
+    <div class="detail-row"><span class="detail-label">BU</span><span>{{ visit.franchise.bu|default:"—" }}</span></div>
+    <div class="detail-row"><span class="detail-label">FR Status</span><span>{{ visit.franchise.fr_status|default:"—" }}</span></div>
+    <div class="detail-row"><span class="detail-label">FR City</span><span>{{ visit.franchise.fr_city|default:"—" }}</span></div>
+    <div class="detail-row"><span class="detail-label">FR Address</span><span>{{ visit.franchise.fr_address|default:"—" }}</span></div>
+    <div class="detail-row"><span class="detail-label">ARM Name</span><span>{{ visit.franchise.arm_name|default:"—" }}</span></div>
+    <div class="detail-row"><span class="detail-label">ARM Emp #</span><span>{{ visit.franchise.arm_emp_no|default:"—" }}</span></div>
+    <div class="detail-row"><span class="detail-label">New or Existing</span><span>{{ visit.get_new_or_existing_display }}</span></div>
+    <div class="detail-row"><span class="detail-label">Visit Date</span><span>{{ visit.visit_date }}</span></div>
+    <div class="detail-row"><span class="detail-label">Visited By</span><span>{{ visit.visited_by.username|default:"—" }}</span></div>
+</div>
+
+<div class="panel detail-panel">
+    <h2>Information</h2>
+    <div class="detail-row"><span class="detail-label">Name</span><span>{{ visit.name }}</span></div>
+    <div class="detail-row"><span class="detail-label">EVC</span><span>{{ visit.evc }}</span></div>
+    <div class="detail-row"><span class="detail-label">Type</span><span>{{ visit.get_visit_type_display }}</span></div>
+    <div class="detail-row"><span class="detail-label">BVS</span><span>{{ visit.get_bvs_display }}</span></div>
+    <div class="detail-row"><span class="detail-label">BVS IMEI</span><span>{{ visit.bvs_imei }}</span></div>
+    <div class="detail-row"><span class="detail-label">RSO Visit</span><span>{{ visit.get_rso_visit_display }}</span></div>
+    <div class="detail-row"><span class="detail-label">Location</span><span>{% if visit.latitude and visit.longitude %}{{ visit.latitude }}, {{ visit.longitude }}{% else %}—{% endif %}</span></div>
+</div>
+
+<div class="panel detail-panel">
+    <h2>Stock Information</h2>
+    <div class="detail-row"><span class="detail-label">Load Stock</span><span>{{ visit.get_load_stock_range_display }}</span></div>
+    <div class="detail-row"><span class="detail-label">PSim Stock</span><span>{{ visit.psim_stock }}</span></div>
+    <div class="detail-row"><span class="detail-label">NP Sim Stock</span><span>{{ visit.npsim_stock }}</span></div>
+    <div class="detail-row"><span class="detail-label">MBB Stock</span><span>{{ visit.mbb_stock }}</span></div>
+</div>
+
+<div class="panel detail-panel">
+    <h2>Competition</h2>
+    <div class="detail-row"><span class="detail-label">Zong - Average Loading</span><span>{{ visit.zong_avg_loading }}</span></div>
+    <div class="detail-row"><span class="detail-label">Zong - Average Sim Sales</span><span>{{ visit.zong_avg_sim_sales }}</span></div>
+    <div class="detail-row"><span class="detail-label">Jazz - Average Loading</span><span>{{ visit.jazz_avg_loading }}</span></div>
+    <div class="detail-row"><span class="detail-label">Jazz - Average Sim Sales</span><span>{{ visit.jazz_avg_sim_sales }}</span></div>
+</div>
+
+<div class="panel detail-panel">
+    <h2>Visibility</h2>
+    <div class="detail-row"><span class="detail-label">Fascia</span><span>
+        {% if visit.fascia_zong or visit.fascia_ufone or visit.fascia_jazz %}
+            {% if visit.fascia_zong %}Zong{% endif %}
+            {% if visit.fascia_ufone %}{% if visit.fascia_zong %}, {% endif %}Ufone{% endif %}
+            {% if visit.fascia_jazz %}{% if visit.fascia_zong or visit.fascia_ufone %}, {% endif %}Jazz{% endif %}
+        {% else %}—{% endif %}
+    </span></div>
+    <div class="detail-row"><span class="detail-label">AVH</span><span>{{ visit.get_avh_display }}</span></div>
+    <div class="detail-row"><span class="detail-label">POS</span><span>{{ visit.get_pos_display }}</span></div>
+</div>
+
+<div class="panel detail-panel">
+    <h2>Awareness</h2>
+    <div class="detail-row"><span class="detail-label">Promo Awareness</span><span>{{ visit.get_promo_awareness_display }}</span></div>
+    <div class="detail-row"><span class="detail-label">Bundle Awareness</span><span>{{ visit.get_bundle_awareness_display }}</span></div>
+</div>
+
+<div class="panel detail-panel">
+    <h2>Commitment</h2>
+    <div class="detail-row"><span class="detail-label">FCA Commitment</span><span>{{ visit.fca_commitment|default:"—" }}</span></div>
+    <div class="detail-row"><span class="detail-label">MNP Commitment</span><span>{{ visit.mnp_commitment|default:"—" }}</span></div>
+</div>
+
+{% if visit.comments %}
+<div class="panel detail-panel">
+    <h2>Comments</h2>
+    <p>{{ visit.comments|linebreaks }}</p>
+</div>
+{% endif %}
+
+{% if visit.photo or visit.photo2 %}
+<div class="panel detail-panel">
+    <h2>Photos</h2>
+    <div class="photo-gallery">
+        {% if visit.photo %}
+        <a href="{{ visit.photo.url }}" target="_blank"><img src="{{ visit.photo.url }}" class="visit-photo" alt="Visit photo 1"></a>
+        {% endif %}
+        {% if visit.photo2 %}
+        <a href="{{ visit.photo2.url }}" target="_blank"><img src="{{ visit.photo2.url }}" class="visit-photo" alt="Visit photo 2"></a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<div class="panel detail-panel">
+    <h2>Management Comment</h2>
+    {% if is_management %}
+    <form method="post" action="{% url 'visit_add_comment' visit.pk %}">
+        {% csrf_token %}
+        <textarea name="management_comment" class="form-control" rows="3" placeholder="Add a note for this visit...">{{ visit.management_comment }}</textarea>
+        <button type="submit" class="btn btn-primary mt-2" style="width:auto; display:inline-block;">Save Comment</button>
+    </form>
+    {% else %}
+        <p>{{ visit.management_comment|linebreaks|default:"No comment yet." }}</p>
+    {% endif %}
+</div>
+{% endblock %}

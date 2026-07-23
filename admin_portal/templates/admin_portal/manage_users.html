@@ -1,0 +1,120 @@
+{% extends 'admin_portal/base.html' %}
+{% load widget_tweaks %}
+{% block title %}Add Users | Admin Portal{% endblock %}
+
+{% block content %}
+<h1 class="h3 fw-bold mb-4">Add Users</h1>
+
+<div class="card mb-4" style="max-width: 520px;">
+    <div class="card-body">
+        <p class="text-secondary small">
+            You set the email and password directly — nothing is generated
+            automatically. The account can log in right away.
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label fw-semibold" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+                {% render_field form.email class="form-control" %}
+                {% for error in form.email.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+                {% render_field form.password class="form-control" %}
+                {% if form.password.help_text %}<div class="form-text">{{ form.password.help_text }}</div>{% endif %}
+                {% for error in form.password.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">{{ form.role.label }}</label>
+                <div>
+                    {% for radio in form.role %}
+                    <div class="form-check">
+                        {{ radio.tag }}
+                        <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% for error in form.role.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">Create Account</button>
+        </form>
+    </div>
+</div>
+
+<h2 class="h5 fw-bold mb-3">Existing Users</h2>
+
+<form method="get" class="d-flex gap-2 mb-3">
+    <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by email..." style="max-width: 320px;">
+    <button type="submit" class="btn btn-outline-secondary">Search</button>
+</form>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Password</th>
+                    <th>Last Updated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in users %}
+                <tr>
+                    <td>{{ entry.credential.user.email }}</td>
+                    <td>
+                        {% if entry.credential.user.is_staff %}
+                        <span class="badge text-bg-dark">Staff</span>
+                        {% elif entry.is_viewer %}
+                        <span class="badge text-bg-info">Viewer</span>
+                        {% else %}
+                        <span class="badge text-bg-primary">Field Agent</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="pw-mask" id="pw-{{ entry.credential.pk }}">••••••••••</span>
+                        <span class="pw-plain d-none" id="pw-plain-{{ entry.credential.pk }}">{{ entry.credential.plain_password }}</span>
+                        <button type="button" class="btn btn-link btn-sm p-0 ms-1" onclick="togglePw({{ entry.credential.pk }})">show</button>
+                    </td>
+                    <td>{{ entry.credential.updated_at|date:"d M Y" }}</td>
+                    <td>
+                        <form method="post" action="{% url 'account_reset_password' entry.credential.user.pk %}" class="d-inline" onsubmit="return confirm('Generate a new random password for {{ entry.credential.user.email }}?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-secondary btn-sm">Reset (random)</button>
+                        </form>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="toggleForm({{ entry.credential.pk }})">Set password</button>
+                    </td>
+                </tr>
+                <tr id="set-pw-row-{{ entry.credential.pk }}" class="d-none">
+                    <td colspan="5">
+                        <form method="post" action="{% url 'account_set_password' entry.credential.user.pk %}" class="d-flex gap-2">
+                            {% csrf_token %}
+                            <input type="text" name="new_password" placeholder="New password (min 8 characters)" class="form-control" required minlength="8" style="max-width:320px;">
+                            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-secondary">No users yet — create one above.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function togglePw(pk) {
+    const mask = document.getElementById('pw-' + pk);
+    const plain = document.getElementById('pw-plain-' + pk);
+    const isHidden = plain.classList.contains('d-none');
+    plain.classList.toggle('d-none', !isHidden);
+    mask.classList.toggle('d-none', isHidden);
+    event.target.textContent = isHidden ? 'hide' : 'show';
+}
+function toggleForm(pk) {
+    document.getElementById('set-pw-row-' + pk).classList.toggle('d-none');
+}
+</script>
+{% endblock %}

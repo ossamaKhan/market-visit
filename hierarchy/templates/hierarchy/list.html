@@ -1,0 +1,67 @@
+{% extends 'admin_portal/base.html' %}
+{% block title %}Franchise Hierarchy | Admin Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Franchise Hierarchy</h1>
+    <a href="{% url 'hierarchy_upload' %}" class="btn-primary">Upload File</a>
+</div>
+
+<form method="get" class="filter-bar">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search FR ID, ARM name, email, city...">
+    <select name="region">
+        <option value="">All Regions</option>
+        {% for region in regions %}
+        <option value="{{ region }}" {% if region_filter == region %}selected{% endif %}>{{ region }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn-secondary">Filter</button>
+</form>
+
+<div class="panel">
+    <div class="table-responsive">
+<table class="data-table">
+        <thead>
+            <tr>
+                <th>FR ID</th>
+                <th>Region</th>
+                <th>BU</th>
+                <th>City</th>
+                <th>Status</th>
+                <th>ARM Name</th>
+                <th>ARM Emp #</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in page_obj %}
+            <tr>
+                <td>{{ record.fr_id }}</td>
+                <td>{{ record.region }}</td>
+                <td>{{ record.bu }}</td>
+                <td>{{ record.fr_city }}</td>
+                <td>{{ record.fr_status }}</td>
+                <td>{{ record.arm_name }}</td>
+                <td>{{ record.arm_emp_no }}</td>
+                <td>{{ record.email }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8">No hierarchy data uploaded yet. <a href="{% url 'hierarchy_upload' %}">Upload a file</a>.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&region={{ region_filter }}">&laquo; Prev</a>
+    {% endif %}
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&q={{ query }}&region={{ region_filter }}">Next &raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

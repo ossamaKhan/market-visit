@@ -1,0 +1,91 @@
+{% extends 'reports/base.html' %}
+{% block title %}Visits | Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Visits</h1>
+    <a href="{% url 'viewer_dashboard_pdf' %}?{{ query_string }}" class="btn btn-primary">
+        <i class="bi bi-file-earmark-pdf"></i> Download PDF
+    </a>
+</div>
+
+<form method="get" class="filter-bar" style="flex-wrap: wrap;">
+    <select name="arm">
+        <option value="">All ARMs</option>
+        {% for value in arm_options %}
+        <option value="{{ value }}" {% if arm == value %}selected{% endif %}>{{ value }}</option>
+        {% endfor %}
+    </select>
+    <select name="city">
+        <option value="">All Cities</option>
+        {% for value in city_options %}
+        <option value="{{ value }}" {% if city == value %}selected{% endif %}>{{ value }}</option>
+        {% endfor %}
+    </select>
+    <select name="bu">
+        <option value="">All BUs</option>
+        {% for value in bu_options %}
+        <option value="{{ value }}" {% if bu == value %}selected{% endif %}>{{ value }}</option>
+        {% endfor %}
+    </select>
+    <select name="fr_id">
+        <option value="">All Franchises</option>
+        {% for value in fr_id_options %}
+        <option value="{{ value }}" {% if fr_id == value %}selected{% endif %}>{{ value }}</option>
+        {% endfor %}
+    </select>
+    <input type="date" name="date_from" value="{{ date_from }}" title="From date">
+    <input type="date" name="date_to" value="{{ date_to }}" title="To date">
+    <button type="submit" class="btn-secondary">Filter</button>
+    <a href="{% url 'viewer_dashboard' %}" class="btn-secondary">Clear</a>
+</form>
+
+<div class="panel">
+    <div class="table-responsive">
+<table class="data-table">
+        <thead>
+            <tr>
+                <th>FR ID</th>
+                <th>ARM</th>
+                <th>City</th>
+                <th>BU</th>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Fascia</th>
+                <th>Promo Awareness</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for visit in page_obj %}
+            <tr onclick="window.location='{% url 'visit_detail' visit.pk %}'" class="clickable-row">
+                <td>{{ visit.franchise.fr_id|default:"—" }}</td>
+                <td>{{ visit.franchise.arm_name|default:"—" }}</td>
+                <td>{{ visit.franchise.fr_city|default:"—" }}</td>
+                <td>{{ visit.franchise.bu|default:"—" }}</td>
+                <td>{{ visit.name }}</td>
+                <td>{{ visit.visit_date }}</td>
+                <td>{{ visit.get_visit_type_display }}</td>
+                <td>{{ visit.get_fascia_display }}</td>
+                <td>{{ visit.get_promo_awareness_display }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="9">No visits match these filters.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&arm={{ arm }}&city={{ city }}&bu={{ bu }}&fr_id={{ fr_id }}&date_from={{ date_from }}&date_to={{ date_to }}">&laquo; Prev</a>
+    {% endif %}
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&arm={{ arm }}&city={{ city }}&bu={{ bu }}&fr_id={{ fr_id }}&date_from={{ date_from }}&date_to={{ date_to }}">Next &raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

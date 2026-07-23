@@ -1,0 +1,27 @@
+{% extends 'admin_portal/base.html' %}
+{% load widget_tweaks %}
+{% block title %}Upload Hierarchy | Admin Portal{% endblock %}
+
+{% block content %}
+<h1>Upload Franchise Hierarchy</h1>
+<p class="help-text">
+    Upload the hierarchy Excel file. Expected columns (in any order):
+    <strong>FR ID, Region, BU, FR Status, FR City, FR Address, ARM Name, ARM Emp #, Email</strong>.
+    Existing FR IDs will be updated in place. A login account with a random
+    password is auto-created for any email that doesn't already have one —
+    view or reset these under <a href="{% url 'manage_users' %}">Manage Users</a>.
+</p>
+
+<div class="panel" style="max-width:500px;">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.file.id_for_label }}">{{ form.file.label }}</label>
+            {% render_field form.file class="form-control" %}
+            {% if form.file.help_text %}<p class="help-text">{{ form.file.help_text }}</p>{% endif %}
+            {% for error in form.file.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+        <button type="submit" class="btn-primary">Upload &amp; Process</button>
+    </form>
+</div>
+{% endblock %}

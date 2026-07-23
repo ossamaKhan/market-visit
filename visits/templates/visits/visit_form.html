@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block title %}{{ title }} | Market Visit Dashboard{% endblock %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<form method="post" enctype="multipart/form-data" class="visit-form" id="visit-form">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="alert alert-error">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <!-- Franchise selector + auto-fetched hierarchy box -->
+    <div class="panel section-panel">
+        <h2>Franchise</h2>
+        <div class="form-group">
+            <label for="{{ form.franchise.id_for_label }}">{{ form.franchise.label }}</label>
+            {% render_field form.franchise class="form-control" id="id_franchise" %}
+            {% for error in form.franchise.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div id="hierarchy-box" class="hierarchy-box">
+            <p class="hierarchy-placeholder" id="hierarchy-placeholder">Select a franchise above to see its details.</p>
+            <div class="hierarchy-grid" id="hierarchy-grid" style="display:none;">
+                <div><span class="detail-label">Region</span><span id="hf-region">—</span></div>
+                <div><span class="detail-label">BU</span><span id="hf-bu">—</span></div>
+                <div><span class="detail-label">FR Status</span><span id="hf-fr_status">—</span></div>
+                <div><span class="detail-label">FR City</span><span id="hf-fr_city">—</span></div>
+                <div><span class="detail-label">FR Address</span><span id="hf-fr_address">—</span></div>
+                <div><span class="detail-label">ARM Name</span><span id="hf-arm_name">—</span></div>
+                <div><span class="detail-label">ARM Emp #</span><span id="hf-arm_emp_no">—</span></div>
+                <div><span class="detail-label">Email</span><span id="hf-email">—</span></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.new_or_existing.id_for_label }}">{{ form.new_or_existing.label }}</label>
+            {% render_field form.new_or_existing class="form-control" %}
+            {% for error in form.new_or_existing.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label>Visit Date</label>
+            <p class="auto-value">{{ today|date:"l, F j, Y" }}</p>
+            <p class="help-text">Set automatically to today's date — this can't be changed.</p>
+        </div>
+    </div>
+
+    <!-- Information -->
+    <div class="panel section-panel">
+        <h2>Information</h2>
+
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+            {% render_field form.name class="form-control" %}
+            {% for error in form.name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.evc.id_for_label }}">{{ form.evc.label }}</label>
+            {% render_field form.evc class="form-control" %}
+            {% if form.evc.help_text %}<p class="help-text">{{ form.evc.help_text }}</p>{% endif %}
+            {% for error in form.evc.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.visit_type.id_for_label }}">{{ form.visit_type.label }}</label>
+            {% render_field form.visit_type class="form-control" %}
+            {% for error in form.visit_type.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.bvs.id_for_label }}">{{ form.bvs.label }}</label>
+            {% render_field form.bvs class="form-control" %}
+            {% for error in form.bvs.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.bvs_imei.id_for_label }}">{{ form.bvs_imei.label }}</label>
+            {% render_field form.bvs_imei class="form-control" %}
+            {% for error in form.bvs_imei.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.rso_visit.id_for_label }}">{{ form.rso_visit.label }}</label>
+            {% render_field form.rso_visit class="form-control" %}
+            {% for error in form.rso_visit.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        {{ form.latitude }}
+        {{ form.longitude }}
+        <div class="form-group">
+            <label>Location</label>
+            <p class="help-text" id="location-status">Requesting your location...</p>
+        </div>
+    </div>
+
+    <!-- Stock Information -->
+    <div class="panel section-panel">
+        <h2>Stock Information</h2>
+
+        <div class="form-group">
+            <label for="{{ form.load_stock_range.id_for_label }}">{{ form.load_stock_range.label }}</label>
+            {% render_field form.load_stock_range class="form-control" %}
+            {% for error in form.load_stock_range.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.psim_stock.id_for_label }}">{{ form.psim_stock.label }}</label>
+            {% render_field form.psim_stock class="form-control" %}
+            {% for error in form.psim_stock.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.npsim_stock.id_for_label }}">{{ form.npsim_stock.label }}</label>
+            {% render_field form.npsim_stock class="form-control" %}
+            {% for error in form.npsim_stock.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.mbb_stock.id_for_label }}">{{ form.mbb_stock.label }}</label>
+            {% render_field form.mbb_stock class="form-control" %}
+            {% for error in form.mbb_stock.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+    </div>
+
+    <!-- Competition -->
+    <div class="panel section-panel">
+        <h2>Competition</h2>
+
+        <h3 class="subsection-title">Zong</h3>
+        <div class="form-group">
+            <label for="{{ form.zong_avg_loading.id_for_label }}">{{ form.zong_avg_loading.label }}</label>
+            {% render_field form.zong_avg_loading class="form-control" %}
+            {% for error in form.zong_avg_loading.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.zong_avg_sim_sales.id_for_label }}">{{ form.zong_avg_sim_sales.label }}</label>
+            {% render_field form.zong_avg_sim_sales class="form-control" %}
+            {% for error in form.zong_avg_sim_sales.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <h3 class="subsection-title">Jazz</h3>
+        <div class="form-group">
+            <label for="{{ form.jazz_avg_loading.id_for_label }}">{{ form.jazz_avg_loading.label }}</label>
+            {% render_field form.jazz_avg_loading class="form-control" %}
+            {% for error in form.jazz_avg_loading.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.jazz_avg_sim_sales.id_for_label }}">{{ form.jazz_avg_sim_sales.label }}</label>
+            {% render_field form.jazz_avg_sim_sales class="form-control" %}
+            {% for error in form.jazz_avg_sim_sales.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+    </div>
+
+    <!-- Visibility -->
+    <div class="panel section-panel">
+        <h2>Visibility</h2>
+
+        <div class="form-group">
+            <label>Fascia</label>
+            <div class="form-check">
+                {{ form.fascia_zong }}
+                <label class="form-check-label" for="{{ form.fascia_zong.id_for_label }}">{{ form.fascia_zong.label }}</label>
+            </div>
+            <div class="form-check">
+                {{ form.fascia_ufone }}
+                <label class="form-check-label" for="{{ form.fascia_ufone.id_for_label }}">{{ form.fascia_ufone.label }}</label>
+            </div>
+            <div class="form-check">
+                {{ form.fascia_jazz }}
+                <label class="form-check-label" for="{{ form.fascia_jazz.id_for_label }}">{{ form.fascia_jazz.label }}</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.avh.id_for_label }}">{{ form.avh.label }}</label>
+            {% render_field form.avh class="form-control" %}
+            {% for error in form.avh.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.pos.id_for_label }}">{{ form.pos.label }}</label>
+            {% render_field form.pos class="form-control" %}
+            {% for error in form.pos.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+    </div>
+
+    <!-- Awareness -->
+    <div class="panel section-panel">
+        <h2>Awareness</h2>
+
+        <div class="form-group">
+            <label for="{{ form.promo_awareness.id_for_label }}">{{ form.promo_awareness.label }}</label>
+            {% render_field form.promo_awareness class="form-control" %}
+            {% for error in form.promo_awareness.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.bundle_awareness.id_for_label }}">{{ form.bundle_awareness.label }}</label>
+            {% render_field form.bundle_awareness class="form-control" %}
+            {% for error in form.bundle_awareness.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+    </div>
+
+    <!-- Commitment (optional) -->
+    <div class="panel section-panel">
+        <h2>Commitment</h2>
+        <p class="help-text">Optional.</p>
+
+        <div class="form-group">
+            <label for="{{ form.fca_commitment.id_for_label }}">{{ form.fca_commitment.label }}</label>
+            {% render_field form.fca_commitment class="form-control" %}
+            {% for error in form.fca_commitment.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.mnp_commitment.id_for_label }}">{{ form.mnp_commitment.label }}</label>
+            {% render_field form.mnp_commitment class="form-control" %}
+            {% for error in form.mnp_commitment.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+    </div>
+
+    <!-- Comments (optional) -->
+    <div class="panel section-panel">
+        <h2>Comments</h2>
+        <p class="help-text">Optional.</p>
+        <div class="form-group">
+            <label for="{{ form.comments.id_for_label }}">{{ form.comments.label }}</label>
+            {% render_field form.comments class="form-control" %}
+            {% for error in form.comments.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+    </div>
+
+    <!-- Photos -->
+    <div class="panel section-panel">
+        <h2>Photos</h2>
+        <div class="form-group">
+            <label for="{{ form.photo.id_for_label }}">{{ form.photo.label }}</label>
+            {% render_field form.photo class="form-control" %}
+            {% for error in form.photo.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.photo2.id_for_label }}">{{ form.photo2.label }} <span class="help-text">(optional)</span></label>
+            {% render_field form.photo2 class="form-control" %}
+            {% for error in form.photo2.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+        </div>
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="btn-primary">Save</button>
+        <a href="{% url 'dashboard' %}" class="btn-secondary">Cancel</a>
+    </div>
+</form>
+
+<script id="hierarchy-data" type="application/json">{{ hierarchy_json|safe }}</script>
+<script>
+    const hierarchyData = JSON.parse(document.getElementById('hierarchy-data').textContent);
+    const franchiseSelect = document.getElementById('id_franchise');
+    const placeholder = document.getElementById('hierarchy-placeholder');
+    const grid = document.getElementById('hierarchy-grid');
+    const fieldIds = ['region', 'bu', 'fr_status', 'fr_city', 'fr_address', 'arm_name', 'arm_emp_no', 'email'];
+
+    function populateHierarchyBox() {
+        const selectedId = franchiseSelect.value;
+        const record = hierarchyData[selectedId];
+        if (!record) {
+            placeholder.style.display = 'block';
+            grid.style.display = 'none';
+            return;
+        }
+        placeholder.style.display = 'none';
+        grid.style.display = 'grid';
+        fieldIds.forEach(function (field) {
+            const el = document.getElementById('hf-' + field);
+            el.textContent = record[field] || '—';
+        });
+    }
+
+    franchiseSelect.addEventListener('change', populateHierarchyBox);
+    populateHierarchyBox();
+
+    // Fetch the device's current location as soon as the form loads.
+    const locationStatus = document.getElementById('location-status');
+    const latInput = document.getElementById('id_latitude');
+    const lonInput = document.getElementById('id_longitude');
+
+    if (latInput.value && lonInput.value) {
+        locationStatus.textContent = 'Location: ' + latInput.value + ', ' + lonInput.value;
+    } else if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            function (position) {
+                const lat = position.coords.latitude.toFixed(6);
+                const lon = position.coords.longitude.toFixed(6);
+                latInput.value = lat;
+                lonInput.value = lon;
+                locationStatus.textContent = 'Location: ' + lat + ', ' + lon;
+            },
+            function () {
+                locationStatus.textContent = 'Location unavailable — please allow location access and reload, or leave blank.';
+            }
+        );
+    } else {
+        locationStatus.textContent = 'Location is not supported on this device/browser.';
+    }
+</script>
+{% endblock %}

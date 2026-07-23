@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.views import LoginView, LogoutView
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy, reverse
 
@@ -82,6 +83,60 @@ def manage_users(request):
         })
 
     return render(request, 'admin_portal/manage_users.html', {'form': form, 'users': users, 'query': query})
+
+
+@admin_staff_required
+def export_field_agents_excel(request):
+    from openpyxl import Workbook
+    from openpyxl.styles import Font
+    from openpyxl.utils import get_column_letter
+    import io
+
+    viewer_user_ids = set(ViewerAccess.objects.values_list('user_id', flat=True))
+
+    # Field agents only: not staff, and not a viewer/management account.
+    credentials = (
+        UserCredential.objects.select_related('user')
+        .exclude(user__is_staff=True)
+        .exclude(user_id__in=viewer_user_ids)
+        .order_by('user__email')
+    )
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Field Agents"
+
+    headers = ["Email", "Password", "Last Updated"]
+    ws.append(headers)
+    for col in range(1, len(headers) + 1):
+        cell = ws.cell(row=1, column=col)
+        cell.font = Font(name="Arial", bold=True)
+
+    for cred in credentials:
+        ws.append([
+            cred.user.email,
+            cred.plain_password,
+            cred.updated_at.strftime('%Y-%m-%d %H:%M'),
+        ])
+
+    for row in ws.iter_rows(min_row=2):
+        for cell in row:
+            cell.font = Font(name="Arial")
+
+    widths = [32, 22, 20]
+    for i, width in enumerate(widths, start=1):
+        ws.column_dimensions[get_column_letter(i)].width = width
+
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+
+    response = HttpResponse(
+        buffer,
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename="field_agent_credentials.xlsx"'
+    return response
 
 
 @admin_staff_required

@@ -72,6 +72,7 @@ class MarketVisit(models.Model):
         max_length=10, choices=NEW_EXISTING_CHOICES, verbose_name="New or Existing"
     )
     visit_date = models.DateField(db_index=True)
+    visit_time = models.TimeField()
 
     # --- Information section ---
     name = models.CharField(max_length=150, verbose_name="Name")

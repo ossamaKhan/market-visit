@@ -18,6 +18,7 @@
     <div class="detail-row"><span class="detail-label">ARM Emp #</span><span>{{ visit.franchise.arm_emp_no|default:"—" }}</span></div>
     <div class="detail-row"><span class="detail-label">New or Existing</span><span>{{ visit.get_new_or_existing_display }}</span></div>
     <div class="detail-row"><span class="detail-label">Visit Date</span><span>{{ visit.visit_date }}</span></div>
+    <div class="detail-row"><span class="detail-label">Visit Time</span><span>{{ visit.visit_time|time:"g:i A" }}</span></div>
     <div class="detail-row"><span class="detail-label">Visited By</span><span>{{ visit.visited_by.username|default:"—" }}</span></div>
 </div>
 

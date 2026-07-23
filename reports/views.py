@@ -243,6 +243,7 @@ def viewer_dashboard_pdf(request):
         # gains more fields later.
         pairs = [
             ('Date', str(visit.visit_date)),
+            ('Time', visit.visit_time.strftime('%I:%M %p')),
             ('Logged By', visit.visited_by.email if visit.visited_by else '—'),
             ('ARM', franchise.arm_name if franchise else '—'),
             ('City', franchise.fr_city if franchise else '—'),

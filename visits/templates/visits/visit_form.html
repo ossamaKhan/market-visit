@@ -46,6 +46,12 @@
             <p class="auto-value">{{ today|date:"l, F j, Y" }}</p>
             <p class="help-text">Set automatically to today's date — this can't be changed.</p>
         </div>
+
+        <div class="form-group">
+            <label>Visit Time</label>
+            <p class="auto-value">{{ now_time|time:"g:i A" }}</p>
+            <p class="help-text">Set automatically to the current time when you submit — this can't be changed.</p>
+        </div>
     </div>
 
     <!-- Information -->

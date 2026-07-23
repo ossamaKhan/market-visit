@@ -57,13 +57,17 @@ def _hierarchy_json(user):
 
 @field_agent_required
 def visit_create(request):
-    today = timezone.now().date()
+    # timezone.now() returns UTC — .date()/.time() on it directly would give
+    # the wrong values whenever TIME_ZONE isn't UTC (e.g. Asia/Karachi is
+    # UTC+5). localtime() converts it to the configured TIME_ZONE first.
+    now = timezone.localtime(timezone.now())
     if request.method == 'POST':
         form = MarketVisitForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             visit = form.save(commit=False)
             visit.visited_by = request.user
-            visit.visit_date = today
+            visit.visit_date = now.date()
+            visit.visit_time = now.time()
             visit.save()
             messages.success(request, 'Market visit logged successfully.')
             return redirect('visit_detail', pk=visit.pk)
@@ -73,5 +77,6 @@ def visit_create(request):
         'form': form,
         'title': 'Log a Market Visit',
         'hierarchy_json': _hierarchy_json(request.user),
-        'today': today,
+        'today': now.date(),
+        'now_time': now.time(),
     })

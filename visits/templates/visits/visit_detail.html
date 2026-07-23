@@ -57,8 +57,20 @@
             {% if visit.fascia_jazz %}{% if visit.fascia_zong or visit.fascia_ufone %}, {% endif %}Jazz{% endif %}
         {% else %}—{% endif %}
     </span></div>
-    <div class="detail-row"><span class="detail-label">AVH</span><span>{{ visit.get_avh_display }}</span></div>
-    <div class="detail-row"><span class="detail-label">POS</span><span>{{ visit.get_pos_display }}</span></div>
+    <div class="detail-row"><span class="detail-label">AVH</span><span>
+        {% if visit.avh_zong or visit.avh_ufone or visit.avh_jazz %}
+            {% if visit.avh_zong %}Zong{% endif %}
+            {% if visit.avh_ufone %}{% if visit.avh_zong %}, {% endif %}Ufone{% endif %}
+            {% if visit.avh_jazz %}{% if visit.avh_zong or visit.avh_ufone %}, {% endif %}Jazz{% endif %}
+        {% else %}—{% endif %}
+    </span></div>
+    <div class="detail-row"><span class="detail-label">POS</span><span>
+        {% if visit.pos_zong or visit.pos_ufone or visit.pos_jazz %}
+            {% if visit.pos_zong %}Zong{% endif %}
+            {% if visit.pos_ufone %}{% if visit.pos_zong %}, {% endif %}Ufone{% endif %}
+            {% if visit.pos_jazz %}{% if visit.pos_zong or visit.pos_ufone %}, {% endif %}Jazz{% endif %}
+        {% else %}—{% endif %}
+    </span></div>
 </div>
 
 <div class="panel detail-panel">

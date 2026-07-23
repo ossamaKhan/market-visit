@@ -104,8 +104,12 @@ class MarketVisit(models.Model):
     fascia_zong = models.BooleanField(default=False, verbose_name="Zong")
     fascia_ufone = models.BooleanField(default=False, verbose_name="Ufone")
     fascia_jazz = models.BooleanField(default=False, verbose_name="Jazz")
-    avh = models.CharField(max_length=3, choices=YES_NO_CHOICES, verbose_name="AVH")
-    pos = models.CharField(max_length=3, choices=YES_NO_CHOICES, verbose_name="POS")
+    avh_zong = models.BooleanField(default=False, verbose_name="Zong")
+    avh_ufone = models.BooleanField(default=False, verbose_name="Ufone")
+    avh_jazz = models.BooleanField(default=False, verbose_name="Jazz")
+    pos_zong = models.BooleanField(default=False, verbose_name="Zong")
+    pos_ufone = models.BooleanField(default=False, verbose_name="Ufone")
+    pos_jazz = models.BooleanField(default=False, verbose_name="Jazz")
 
     # --- Awareness section ---
     promo_awareness = models.CharField(max_length=10, choices=AWARENESS_CHOICES, verbose_name="Promo Awareness")

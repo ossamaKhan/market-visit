@@ -227,10 +227,13 @@ def viewer_dashboard_pdf(request):
             f"{franchise.fr_id if franchise else '—'} — {visit.name}", styles['Heading3']
         ))
 
-        fascia_flags = [label for label, on in [
-            ('Zong', visit.fascia_zong), ('Ufone', visit.fascia_ufone), ('Jazz', visit.fascia_jazz)
-        ] if on]
-        fascia_summary = ', '.join(fascia_flags) if fascia_flags else '—'
+        def checkbox_summary(zong, ufone, jazz):
+            flags = [label for label, on in [('Zong', zong), ('Ufone', ufone), ('Jazz', jazz)] if on]
+            return ', '.join(flags) if flags else '—'
+
+        fascia_summary = checkbox_summary(visit.fascia_zong, visit.fascia_ufone, visit.fascia_jazz)
+        avh_summary = checkbox_summary(visit.avh_zong, visit.avh_ufone, visit.avh_jazz)
+        pos_summary = checkbox_summary(visit.pos_zong, visit.pos_ufone, visit.pos_jazz)
 
         location = f"{visit.latitude}, {visit.longitude}" if visit.latitude and visit.longitude else '—'
 
@@ -262,8 +265,8 @@ def viewer_dashboard_pdf(request):
             ('Jazz - Avg Loading', str(visit.jazz_avg_loading)),
             ('Jazz - Avg Sim Sales', str(visit.jazz_avg_sim_sales)),
             ('Fascia', fascia_summary),
-            ('AVH', visit.get_avh_display()),
-            ('POS', visit.get_pos_display()),
+            ('AVH', avh_summary),
+            ('POS', pos_summary),
             ('Promo Awareness', visit.get_promo_awareness_display()),
             ('Bundle Awareness', visit.get_bundle_awareness_display()),
             ('FCA Commitment', str(visit.fca_commitment) if visit.fca_commitment is not None else '—'),

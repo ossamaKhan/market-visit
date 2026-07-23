@@ -176,15 +176,35 @@
         </div>
 
         <div class="form-group">
-            <label for="{{ form.avh.id_for_label }}">{{ form.avh.label }}</label>
-            {% render_field form.avh class="form-control" %}
-            {% for error in form.avh.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            <label>AVH</label>
+            <div class="form-check">
+                {{ form.avh_zong }}
+                <label class="form-check-label" for="{{ form.avh_zong.id_for_label }}">{{ form.avh_zong.label }}</label>
+            </div>
+            <div class="form-check">
+                {{ form.avh_ufone }}
+                <label class="form-check-label" for="{{ form.avh_ufone.id_for_label }}">{{ form.avh_ufone.label }}</label>
+            </div>
+            <div class="form-check">
+                {{ form.avh_jazz }}
+                <label class="form-check-label" for="{{ form.avh_jazz.id_for_label }}">{{ form.avh_jazz.label }}</label>
+            </div>
         </div>
 
         <div class="form-group">
-            <label for="{{ form.pos.id_for_label }}">{{ form.pos.label }}</label>
-            {% render_field form.pos class="form-control" %}
-            {% for error in form.pos.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+            <label>POS</label>
+            <div class="form-check">
+                {{ form.pos_zong }}
+                <label class="form-check-label" for="{{ form.pos_zong.id_for_label }}">{{ form.pos_zong.label }}</label>
+            </div>
+            <div class="form-check">
+                {{ form.pos_ufone }}
+                <label class="form-check-label" for="{{ form.pos_ufone.id_for_label }}">{{ form.pos_ufone.label }}</label>
+            </div>
+            <div class="form-check">
+                {{ form.pos_jazz }}
+                <label class="form-check-label" for="{{ form.pos_jazz.id_for_label }}">{{ form.pos_jazz.label }}</label>
+            </div>
         </div>
     </div>
 

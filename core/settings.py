@@ -17,7 +17,10 @@ SECRET_KEY = os.environ.get(
 # Set DEBUG = False in production
 DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost", "market-visit.onrender.com").split(",")
+ALLOWED_HOSTS = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS",
+    "127.0.0.1,localhost,market-visit.onrender.com"
+).split(",")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
